@@ -3,7 +3,9 @@ require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
 const dns = require('node:dns'); // Add this
-const workoutRoutes = require('./routes/workouts')
+const recipeRoutes = require('./routes/recipes')
+const userRoutes = require('./routes/user')
+
 
 // FORCE GOOGLE DNS: This bypasses Dot Internet's DNS issues
 dns.setServers(['8.8.8.8', '8.8.4.4']); 
@@ -20,7 +22,8 @@ app.use((req, res, next) => {
 })
 
 // routes
-app.use('/api/workouts', workoutRoutes)
+app.use('/api/recipes', recipeRoutes)
+app.use('/api/user', userRoutes)
 
 // connect to db
 // Added a few options to help with stable connections
