@@ -8,7 +8,9 @@ const RecipeForm = () => {
 
   const [title, setTitle] = useState('')
   const [time, setTime] = useState('')
-  const [ingredients, setIngredients] = useState('')
+  const [ingredients, setIngredients] = useState([{ name: '', quantity: '' }])
+  const [instructions, setInstructions] = useState('')
+  const [difficulty, setDifficulty] = useState('')
   const [error, setError] = useState(null)
   const [emptyFields, setEmptyFields] = useState([])
 
@@ -20,7 +22,26 @@ const RecipeForm = () => {
       return
     }
 
-    const recipe = {title, time, ingredients}
+    // filter out completely empty ingredient rows
+    const cleanedIngredients = ingredients.filter(
+      (ing) => ing.name.trim() !== '' || ing.quantity.trim() !== ''
+    )
+
+    // front-end validation for ingredients
+    const localEmptyFields = []
+    if (!title) localEmptyFields.push('title')
+    if (!time) localEmptyFields.push('time')
+    if (cleanedIngredients.length === 0) localEmptyFields.push('ingredients')
+    if (!instructions) localEmptyFields.push('instructions')
+    if (!difficulty) localEmptyFields.push('difficulty')
+
+    if (localEmptyFields.length > 0) {
+      setEmptyFields(localEmptyFields)
+      setError('Please fill in all required fields')
+      return
+    }
+
+    const recipe = { title, time: Number(time), ingredients: cleanedIngredients, instructions, difficulty }
 
     const response = await fetch('/api/recipes', {
       method: 'POST',
@@ -39,7 +60,9 @@ const RecipeForm = () => {
     if (response.ok) {
       setTitle('')
       setTime('')
-      setIngredients('')
+      setIngredients([{ name: '', quantity: '' }])
+      setInstructions('')
+      setDifficulty('')
       setError(null)
       setEmptyFields([])
       dispatch({type: 'CREATE_RECIPE', payload: json})
@@ -67,12 +90,66 @@ const RecipeForm = () => {
       />
 
       <label>Ingredients:</label>
-      <input 
-        type="number"
-        onChange={(e) => setIngredients(e.target.value)}
-        value={ingredients}
-        className={emptyFields.includes('ingredients') ? 'error' : ''}
+      {ingredients.map((row, index) => (
+        <div key={index} className="ingredient-row">
+          <input
+            type="text"
+            placeholder="Ingredient name"
+            value={row.name}
+            onChange={(e) => {
+              const newIngredients = [...ingredients]
+              newIngredients[index].name = e.target.value
+              setIngredients(newIngredients)
+            }}
+            className={emptyFields.includes('ingredients') && !row.name ? 'error' : ''}
+          />
+          <input
+            type="text"
+            placeholder="Quantity"
+            value={row.quantity}
+            onChange={(e) => {
+              const newIngredients = [...ingredients]
+              newIngredients[index].quantity = e.target.value
+              setIngredients(newIngredients)
+            }}
+            className={emptyFields.includes('ingredients') && !row.quantity ? 'error' : ''}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              if (ingredients.length === 1) return
+              setIngredients(ingredients.filter((_, i) => i !== index))
+            }}
+          >
+            Remove
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => setIngredients([...ingredients, { name: '', quantity: '' }])}
+      >
+        Add Ingredient
+      </button>
+
+      <label>Instructions:</label>
+      <textarea
+        onChange={(e) => setInstructions(e.target.value)}
+        value={instructions}
+        className={emptyFields.includes('instructions') ? 'error' : ''}
       />
+
+      <label>Difficulty level:</label>
+      <select
+        value={difficulty}
+        onChange={(e) => setDifficulty(e.target.value)}
+        className={emptyFields.includes('difficulty') ? 'error' : ''}
+      >
+        <option value="">Select difficulty</option>
+        <option value="Easy">Easy</option>
+        <option value="Medium">Medium</option>
+        <option value="Hard">Hard</option>
+      </select>
 
       <button>Add Recipe</button>
       {error && <div className="error">{error}</div>}

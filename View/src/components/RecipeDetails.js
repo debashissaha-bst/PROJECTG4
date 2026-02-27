@@ -30,7 +30,24 @@ const RecipeDetails = ({ recipe }) => {
     <div className="recipe-details">
       <h4>{recipe.title}</h4>
       <p><strong>Time: </strong>{recipe.time} minutes</p>
-      <p><strong>Ingredients Required: </strong>{recipe.ingredients}</p> 
+      {Array.isArray(recipe.ingredients) && (
+        <div>
+          <p><strong>Ingredients Required:</strong></p>
+          <ul>
+            {recipe.ingredients.map((ing, index) => (
+              <li key={index}>
+                {ing.name} - {ing.quantity}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {recipe.instructions && (
+        <p><strong>Instructions: </strong>{recipe.instructions}</p>
+      )}
+      {recipe.difficulty && (
+        <p><strong>Difficulty: </strong>{recipe.difficulty}</p>
+      )}
       <p>{formatDistanceToNow(new Date(recipe.createdAt), { addSuffix: true })}</p>
       <span className="material-symbols-outlined" onClick={handleClick}>delete</span>
     </div>

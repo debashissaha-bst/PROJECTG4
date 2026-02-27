@@ -35,20 +35,24 @@ header a {
 /* homepage */
 .home {
   display: grid;
-  grid-template-columns: 3fr 1fr;
-  gap: 100px;
+  grid-template-columns: 4fr 1.5fr;
+  gap: 60px;
 }
 
 .recipes {
   display: flex;
   flex-direction: column;
-}.recipe-details {
+}
+
+.recipe-details {
   background: #fff;
   border-radius: 4px;
-  margin: 20px auto;
+  margin: 16px 0;
   padding: 20px;
   position: relative;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+  width: 100%;
+  box-sizing: border-box;
 }
 .recipe-details h4 {
   margin: 0 0 10px 0;
@@ -72,10 +76,10 @@ header a {
 }
 
 /* new recipe form */
-label, input {
+label {
   display: block;
 }
-input {
+input, textarea, select {
   padding: 10px;
   margin-top: 10px;
   margin-bottom: 20px;
@@ -83,6 +87,38 @@ input {
   border: 1px solid #ddd;
   border-radius: 4px;
   box-sizing: border-box;
+}
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.ingredient-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ingredient-row input {
+  margin: 0;
+  flex: 1;
+}
+
+.ingredient-row button {
+  margin: 0;
+  padding: 8px 12px;
+  background: #ef4444;
+  border: none;
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+.home .go-recipes-btn {
+  margin-bottom: 20px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 999px;
 }
 form button {
   background: var(--primary);
@@ -103,6 +139,15 @@ div.error {
 }
 input.error {
   border: 2px solid var(--error);
+}
+
+div.success {
+  padding: 10px;
+  background: #e6ffed;
+  border: 2px solid #22c55e;
+  color: #15803d;
+  border-radius: 4px;
+  margin: 20px 0;
 }
 
 
