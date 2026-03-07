@@ -1,5 +1,5 @@
 const express = require('express')
-const { loginUser, signupUser, getProfile, updateProfile } = require('../controllers/userController')
+const { loginUser, signupUser, getProfile, updateProfile, getFriendProfile } = require('../controllers/userController')
 const requireAuth = require('../middleware/requireAuth')
 
 const router = express.Router()
@@ -9,6 +9,7 @@ router.post('/signup', signupUser)
 
 router.use(requireAuth)
 router.get('/profile', getProfile)
+router.get('/profile/:id', getFriendProfile)
 router.patch('/profile', updateProfile)
 
 module.exports = router

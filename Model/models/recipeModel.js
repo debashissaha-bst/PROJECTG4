@@ -15,6 +15,9 @@ const recipeSchema = new Schema({
     enum: ['Easy', 'Medium', 'Hard'],
     required: true
   },
+  ownerEmail: { type: String },
+  likes: { type: Number, default: 0 },
+  isPublic: { type: Boolean, default: false },
   user_id: { type: String, required: true }
 }, { timestamps: true })
 module.exports = mongoose.model('Recipe', recipeSchema)

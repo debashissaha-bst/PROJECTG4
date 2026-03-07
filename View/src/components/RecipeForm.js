@@ -11,6 +11,7 @@ const RecipeForm = () => {
   const [ingredients, setIngredients] = useState([{ name: '', quantity: '' }])
   const [instructions, setInstructions] = useState('')
   const [difficulty, setDifficulty] = useState('')
+   const [isPublic, setIsPublic] = useState(false)
   const [error, setError] = useState(null)
   const [emptyFields, setEmptyFields] = useState([])
 
@@ -41,7 +42,7 @@ const RecipeForm = () => {
       return
     }
 
-    const recipe = { title, time: Number(time), ingredients: cleanedIngredients, instructions, difficulty }
+    const recipe = { title, time: Number(time), ingredients: cleanedIngredients, instructions, difficulty, isPublic }
 
     const response = await fetch('/api/recipes', {
       method: 'POST',
@@ -63,6 +64,7 @@ const RecipeForm = () => {
       setIngredients([{ name: '', quantity: '' }])
       setInstructions('')
       setDifficulty('')
+      setIsPublic(false)
       setError(null)
       setEmptyFields([])
       dispatch({type: 'CREATE_RECIPE', payload: json})
@@ -150,6 +152,16 @@ const RecipeForm = () => {
         <option value="Medium">Medium</option>
         <option value="Hard">Hard</option>
       </select>
+
+      <label>
+        <input
+          type="checkbox"
+          checked={isPublic}
+          onChange={(e) => setIsPublic(e.target.checked)}
+          style={{ width: 'auto', marginRight: '8px' }}
+        />
+        Make this recipe public
+      </label>
 
       <button>Add Recipe</button>
       {error && <div className="error">{error}</div>}

@@ -4,7 +4,7 @@ import { useAuthContext } from '../hooks/useAuthContext'
 // date fns
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
-const RecipeDetails = ({ recipe }) => {
+const RecipeDetails = ({ recipe, hideDelete, onLike }) => {
   const { dispatch } = useRecipesContext()
   const { user } = useAuthContext()
 
@@ -23,6 +23,27 @@ const RecipeDetails = ({ recipe }) => {
 
     if (response.ok) {
       dispatch({type: 'DELETE_RECIPE', payload: json})
+    }
+  }
+
+  const handleToggleVisibility = async () => {
+    if (!user) {
+      return
+    }
+
+    const response = await fetch('/api/recipes/' + recipe._id + '/visibility', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${user.token}`
+      },
+      body: JSON.stringify({ isPublic: !recipe.isPublic })
+    })
+
+    const json = await response.json()
+
+    if (response.ok) {
+      dispatch({ type: 'UPDATE_RECIPE', payload: json })
     }
   }
 
@@ -48,8 +69,31 @@ const RecipeDetails = ({ recipe }) => {
       {recipe.difficulty && (
         <p><strong>Difficulty: </strong>{recipe.difficulty}</p>
       )}
+      {recipe.ownerEmail && (
+        <p><strong>Shared by: </strong>{recipe.ownerEmail}</p>
+      )}
+      {typeof recipe.isPublic === 'boolean' && (
+        <p><strong>Visibility: </strong>{recipe.isPublic ? 'Public' : 'Private'}</p>
+      )}
+      {typeof recipe.likes === 'number' && (
+        <p><strong>Likes: </strong>{recipe.likes}</p>
+      )}
       <p>{formatDistanceToNow(new Date(recipe.createdAt), { addSuffix: true })}</p>
-      <span className="material-symbols-outlined" onClick={handleClick}>delete</span>
+      <div>
+        {!hideDelete && (
+          <span className="material-symbols-outlined" onClick={handleClick}>delete</span>
+        )}
+        {!hideDelete && typeof recipe.isPublic === 'boolean' && (
+          <button type="button" onClick={handleToggleVisibility}>
+            {recipe.isPublic ? 'Make Private' : 'Make Public'}
+          </button>
+        )}
+        {onLike && (
+          <button type="button" onClick={onLike}>
+            Like
+          </button>
+        )}
+      </div>
     </div>
   )
 }

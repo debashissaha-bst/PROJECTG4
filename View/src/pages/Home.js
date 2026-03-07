@@ -8,6 +8,9 @@ const Home = () => {
       <button className="go-recipes-btn" onClick={() => navigate('/recipes')}>
         Go to Recipe Page
       </button>
+      <button className="go-recipes-btn" onClick={() => navigate('/gallery')}>
+        Recipe Gallery
+      </button>
     </div>
   )
 }

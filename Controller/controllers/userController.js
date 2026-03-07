@@ -1,4 +1,5 @@
 const User = require('../../model/models/userModel')
+const FriendRequest = require('../../model/models/friendRequestModel')
 const jwt = require('jsonwebtoken')
 
 const createToken = (_id) => {
@@ -74,4 +75,32 @@ const updateProfile = async (req, res) => {
   }
 }
 
-module.exports = { signupUser, loginUser, getProfile, updateProfile }
+const getFriendProfile = async (req, res) => {
+  const { id } = req.params
+  const currentUserId = req.user._id
+
+  try {
+    const isFriend = await FriendRequest.findOne({
+      status: 'accepted',
+      $or: [
+        { from: currentUserId, to: id },
+        { from: id, to: currentUserId }
+      ]
+    })
+
+    if (!isFriend && String(currentUserId) !== String(id)) {
+      return res.status(403).json({ error: 'You can only view profiles of your friends' })
+    }
+
+    const user = await User.findById(id).select('-password')
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    res.status(200).json(user)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}
+
+module.exports = { signupUser, loginUser, getProfile, updateProfile, getFriendProfile }
