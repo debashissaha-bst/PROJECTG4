@@ -15,6 +15,7 @@ const dns = require('node:dns')
 const recipeRoutes = require('./routes/recipes')
 const userRoutes = require('./routes/user')
 const socialRoutes = require('./routes/social')
+const chatRoutes = require('./routes/chat')
 
 dns.setServers(['8.8.8.8', '8.8.4.4'])
 
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
 app.use('/api/recipes', recipeRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api/social', socialRoutes)
+app.use('/api/chat', chatRoutes)
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {

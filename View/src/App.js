@@ -5,6 +5,7 @@ import { useAuthContext } from './hooks/useAuthContext'
 import Home from './pages/Home'
 import Recipes from './pages/Recipes'
 import RecipeGallery from './pages/RecipeGallery'
+import Chat from './pages/Chat'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Profile from './pages/Profile'
@@ -32,6 +33,10 @@ function App() {
             <Route 
               path="/gallery" 
               element={user ? <RecipeGallery /> : <Navigate to="/login" />} 
+            />
+            <Route 
+              path="/chat" 
+              element={user ? <Chat /> : <Navigate to="/login" />} 
             />
             <Route 
               path="/profile" 
