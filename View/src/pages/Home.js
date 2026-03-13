@@ -10,6 +10,7 @@ const Home = () => {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
   const [now, setNow] = useState(Date.now())
+  const [progress, setProgress] = useState(null)
 
   useEffect(() => {
     if (!user) return
@@ -30,7 +31,21 @@ const Home = () => {
       }
     }
 
+    const fetchProgress = async () => {
+      try {
+        const response = await fetch('/api/user/progress', {
+          headers: { Authorization: `Bearer ${user.token}` }
+        })
+        const json = await response.json()
+        if (!response.ok) {
+          return
+        }
+        setProgress(json)
+      } catch (_) {}
+    }
+
     fetchActive()
+    fetchProgress()
   }, [user])
 
   useEffect(() => {
@@ -84,6 +99,19 @@ const Home = () => {
       </div>
 
       <div className="recipes">
+        <div className="recipe-details">
+          <h4>Progress Dashboard</h4>
+          {!user && <p>Login to see your progress.</p>}
+          {user && progress && (
+            <>
+              <p><strong>Points earned:</strong> {progress.points}</p>
+              <p><strong>Recipes shared:</strong> {progress.recipesSharedCount}</p>
+              <p><strong>Recipes cooked:</strong> {progress.recipesCookedCount}</p>
+            </>
+          )}
+          {user && !progress && <p>Loading progress...</p>}
+        </div>
+
         <div className="recipe-details">
           <h4>Cooking Timer</h4>
           {!user && <p>Login to start cooking from the Gallery.</p>}

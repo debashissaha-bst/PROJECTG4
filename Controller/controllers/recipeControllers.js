@@ -70,6 +70,19 @@ const createRecipe = async (req, res) => {
       isPublic: !!isPublic,
       user_id
     })
+
+    // award points for sharing a new recipe
+    await User.findByIdAndUpdate(
+      user_id,
+      {
+        $inc: {
+          points: 10,
+          recipesSharedCount: 1
+        }
+      },
+      { new: false }
+    )
+
     res.status(200).json(recipe)
   } catch (error) {
     res.status(400).json({ error: error.message })

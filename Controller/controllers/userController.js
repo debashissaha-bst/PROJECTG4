@@ -103,4 +103,24 @@ const getFriendProfile = async (req, res) => {
   }
 }
 
-module.exports = { signupUser, loginUser, getProfile, updateProfile, getFriendProfile }
+const getProgress = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .select('points recipesSharedCount recipesCookedCount')
+      .lean()
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    res.status(200).json({
+      points: user.points || 0,
+      recipesSharedCount: user.recipesSharedCount || 0,
+      recipesCookedCount: user.recipesCookedCount || 0
+    })
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}
+
+module.exports = { signupUser, loginUser, getProfile, updateProfile, getFriendProfile, getProgress }

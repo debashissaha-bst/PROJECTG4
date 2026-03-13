@@ -10,7 +10,10 @@ const userSchema = new Schema({
   dob: { type: String },
   gender: { type: String },
   city: { type: String },
-  dietaryPreference: { type: String }
+  dietaryPreference: { type: String },
+  points: { type: Number, default: 0 },
+  recipesSharedCount: { type: Number, default: 0 },
+  recipesCookedCount: { type: Number, default: 0 }
 })
 
 userSchema.statics.signup = async function(email, password, name, dob, gender, city, dietaryPreference) {

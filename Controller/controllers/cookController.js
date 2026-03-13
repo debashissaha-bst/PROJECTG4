@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const CookSession = require('../../model/models/cookSessionModel')
 const Recipe = require('../../model/models/recipeModel')
+const User = require('../../model/models/userModel')
 
 const startCooking = async (req, res) => {
   const { recipeId } = req.body
@@ -80,6 +81,18 @@ const finishCooking = async (req, res) => {
     if (!session) {
       return res.status(404).json({ error: 'Active cooking session not found' })
     }
+
+    // award points for cooking a recipe
+    await User.findByIdAndUpdate(
+      user_id,
+      {
+        $inc: {
+          points: 5,
+          recipesCookedCount: 1
+        }
+      },
+      { new: false }
+    )
 
     res.status(200).json(session)
   } catch (error) {
