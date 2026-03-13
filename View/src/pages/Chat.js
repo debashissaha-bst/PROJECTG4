@@ -65,9 +65,9 @@ const Chat = () => {
   return (
     <div className="chat-page">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>AI Chatbot</h2>
-        <button type="button" onClick={() => navigate(-1)}>
-          Close
+        <h2>Ai Cooking Assistant</h2>
+        <button type="button" className="chat-close-button" onClick={() => navigate(-1)}>
+          ×
         </button>
       </div>
       <p className="chat-subtitle">Powered by Llama 3.1 8B</p>

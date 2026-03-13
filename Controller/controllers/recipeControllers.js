@@ -1,5 +1,6 @@
 const Recipe = require('../../model/models/recipeModel')
 const User = require('../../model/models/userModel')
+const Like = require('../../model/models/likeModel')
 const mongoose = require('mongoose')
 
 const getRecipes = async (req, res) => {
@@ -142,6 +143,15 @@ const likeRecipe = async (req, res) => {
   }
 
   try {
+    const user_id = req.user._id
+
+    const existing = await Like.findOne({ user_id, recipe_id: id }).select('_id')
+    if (existing) {
+      return res.status(400).json({ error: 'You have already liked this recipe' })
+    }
+
+    const like = await Like.create({ user_id, recipe_id: id })
+
     const recipe = await Recipe.findByIdAndUpdate(
       id,
       { $inc: { likes: 1 } },

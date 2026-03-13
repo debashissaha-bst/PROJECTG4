@@ -1,5 +1,6 @@
 const User = require('../../model/models/userModel')
 const FriendRequest = require('../../model/models/friendRequestModel')
+const Recipe = require('../../model/models/recipeModel')
 const jwt = require('jsonwebtoken')
 
 const createToken = (_id) => {
@@ -57,11 +58,43 @@ const getProfile = async (req, res) => {
 }
 
 const updateProfile = async (req, res) => {
-  const { name, dob, gender, city, dietaryPreference } = req.body
+  const {
+    name,
+    dob,
+    gender,
+    city,
+    dietaryPreference,
+    nutritionGoal,
+    dietaryRestrictions,
+    cuisinePreference,
+    dailyCalorieTarget
+  } = req.body
+
+  const update = {
+    name,
+    dob,
+    gender,
+    city,
+    dietaryPreference,
+    nutritionGoal: nutritionGoal || '',
+    cuisinePreference: cuisinePreference || ''
+  }
+
+  if (Array.isArray(dietaryRestrictions)) {
+    update.dietaryRestrictions = dietaryRestrictions
+  }
+
+  if (dailyCalorieTarget !== undefined && dailyCalorieTarget !== null && dailyCalorieTarget !== '') {
+    const num = Number(dailyCalorieTarget)
+    if (!Number.isNaN(num)) {
+      update.dailyCalorieTarget = num
+    }
+  }
+
   try {
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { name, dob, gender, city, dietaryPreference },
+      update,
       { new: true, runValidators: true }
     ).select('-password')
 
@@ -113,10 +146,24 @@ const getProgress = async (req, res) => {
       return res.status(404).json({ error: 'User not found' })
     }
 
+    const ownerId = String(req.user._id)
+    const likeAgg = await Recipe.aggregate([
+      { $match: { user_id: ownerId } },
+      {
+        $group: {
+          _id: null,
+          totalLikes: { $sum: { $ifNull: ['$likes', 0] } }
+        }
+      }
+    ])
+
+    const likesReceived = likeAgg.length > 0 ? likeAgg[0].totalLikes : 0
+
     res.status(200).json({
       points: user.points || 0,
       recipesSharedCount: user.recipesSharedCount || 0,
-      recipesCookedCount: user.recipesCookedCount || 0
+      recipesCookedCount: user.recipesCookedCount || 0,
+      likesReceived
     })
   } catch (error) {
     res.status(400).json({ error: error.message })

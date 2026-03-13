@@ -11,6 +11,21 @@ const userSchema = new Schema({
   gender: { type: String },
   city: { type: String },
   dietaryPreference: { type: String },
+  nutritionGoal: {
+    type: String,
+    enum: ['Weight loss', 'High protein', 'Quick meals', 'Balanced diet', 'Gourmet', ''],
+    default: ''
+  },
+  dietaryRestrictions: {
+    type: [String],
+    default: []
+  },
+  cuisinePreference: {
+    type: String,
+    enum: ['Italian', 'Asian', 'Mediterranean', 'Mexican', 'Indian', ''],
+    default: ''
+  },
+  dailyCalorieTarget: { type: Number },
   points: { type: Number, default: 0 },
   recipesSharedCount: { type: Number, default: 0 },
   recipesCookedCount: { type: Number, default: 0 }

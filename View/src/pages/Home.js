@@ -107,6 +107,7 @@ const Home = () => {
               <p><strong>Points earned:</strong> {progress.points}</p>
               <p><strong>Recipes shared:</strong> {progress.recipesSharedCount}</p>
               <p><strong>Recipes cooked:</strong> {progress.recipesCookedCount}</p>
+              <p><strong>Likes received:</strong> {progress.likesReceived ?? 0}</p>
             </>
           )}
           {user && !progress && <p>Loading progress...</p>}
@@ -149,7 +150,7 @@ const Home = () => {
         className="go-recipes-btn ai-chatbot-btn ai-chatbot-floating"
         onClick={() => navigate('/chat')}
       >
-        AI Chatbot
+        Ai Cooking Assistant
       </button>
     </div>
   )
