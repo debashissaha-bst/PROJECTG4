@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuthContext } from '../hooks/useAuthContext'
+import { Link } from 'react-router-dom'
 
 const Profile = () => {
   const { user, dispatch } = useAuthContext()
@@ -90,6 +91,10 @@ const Profile = () => {
   return (
     <form className="signup" onSubmit={handleSubmit}>
       <h3>Profile</h3>
+
+      <Link to="/favourites" style={{ display: 'inline-block', marginBottom: 12 }}>
+        <button type="button">Favourite</button>
+      </Link>
 
       <label>Name:</label>
       <input

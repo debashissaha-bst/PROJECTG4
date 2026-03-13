@@ -9,6 +9,7 @@ import Chat from './pages/Chat'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Profile from './pages/Profile'
+import Favourites from './pages/Favourites'
 import FriendProfile from './pages/FriendProfile'
 import Social from './pages/Social'
 import Navbar from './components/Navbar'
@@ -41,6 +42,10 @@ function App() {
             <Route 
               path="/profile" 
               element={user ? <Profile /> : <Navigate to="/login" />} 
+            />
+            <Route
+              path="/favourites"
+              element={user ? <Favourites /> : <Navigate to="/login" />}
             />
             <Route 
               path="/profile/:id" 

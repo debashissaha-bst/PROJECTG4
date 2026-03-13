@@ -155,6 +155,25 @@ header a {
   color: #333;
 }
 
+.recipe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.review-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.review-item {
+  margin-bottom: 6px;
+  color: #444;
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
 /* new recipe form */
 label {
   display: block;

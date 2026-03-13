@@ -4,7 +4,7 @@ import { useAuthContext } from '../hooks/useAuthContext'
 // date fns
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
-const RecipeDetails = ({ recipe, hideDelete, onLike }) => {
+const RecipeDetails = ({ recipe, hideDelete, onLike, onFavourite, favouriteLabel = 'Save to favourite' }) => {
   const { dispatch } = useRecipesContext()
   const { user } = useAuthContext()
 
@@ -79,7 +79,7 @@ const RecipeDetails = ({ recipe, hideDelete, onLike }) => {
         <p><strong>Likes: </strong>{recipe.likes}</p>
       )}
       <p>{formatDistanceToNow(new Date(recipe.createdAt), { addSuffix: true })}</p>
-      <div>
+      <div className="recipe-actions">
         {!hideDelete && (
           <span className="material-symbols-outlined" onClick={handleClick}>delete</span>
         )}
@@ -91,6 +91,11 @@ const RecipeDetails = ({ recipe, hideDelete, onLike }) => {
         {onLike && (
           <button type="button" onClick={onLike}>
             Like
+          </button>
+        )}
+        {onFavourite && (
+          <button type="button" onClick={onFavourite}>
+            {favouriteLabel}
           </button>
         )}
       </div>
