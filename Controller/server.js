@@ -19,6 +19,7 @@ const chatRoutes = require('./routes/chat')
 const favouriteRoutes = require('./routes/favourites')
 const cookRoutes = require('./routes/cook')
 const reviewRoutes = require('./routes/reviews')
+const mealRoutes = require('./routes/meals')
 
 dns.setServers(['8.8.8.8', '8.8.4.4'])
 
@@ -36,6 +37,7 @@ app.use('/api/chat', chatRoutes)
 app.use('/api/favourites', favouriteRoutes)
 app.use('/api/cook', cookRoutes)
 app.use('/api/reviews', reviewRoutes)
+app.use('/api/meals', mealRoutes)
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {

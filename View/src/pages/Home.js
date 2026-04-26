@@ -96,6 +96,9 @@ const Home = () => {
         <button className="go-recipes-btn" onClick={() => navigate('/gallery')}>
           Recipe Gallery
         </button>
+        <button className="go-recipes-btn" onClick={() => navigate('/personalized-meals')}>
+          Personalized Meal Page
+        </button>
       </div>
 
       <div className="recipes">
@@ -139,6 +142,14 @@ const Home = () => {
                 </Link>
               </div>
             </>
+          )}
+
+          {user && (
+            <div className="recipe-actions">
+              <Link to="/cooking-history">
+                <button type="button">Cooking History</button>
+              </Link>
+            </div>
           )}
 
           {error && <div className="error">{error}</div>}

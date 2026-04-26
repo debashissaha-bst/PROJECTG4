@@ -33,20 +33,47 @@ header a {
 }
 
 .social-page h2 {
-  margin-top: 0;
+  margin: 0;
+  font-size: 1.8rem;
+  color: #111827;
+}
+
+.social-hero {
+  background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 100%);
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+
+.social-hero p {
+  margin: 6px 0 0;
+  color: #4b5563;
+  font-size: 0.95rem;
 }
 
 .social-layout {
   display: grid;
-  grid-template-columns: 1.5fr 2fr;
-  gap: 40px;
+  grid-template-columns: minmax(320px, 1.1fr) minmax(380px, 1.5fr);
+  gap: 20px;
 }
 
 .social-column {
-  background: #fff;
-  padding: 16px;
-  border-radius: 4px;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+  background: linear-gradient(180deg, #ffffff 0%, #fcfcff 100%);
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.social-section + .social-section {
+  margin-top: 18px;
+}
+
+.social-section h3 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  color: #1f2937;
 }
 
 .social-user-card,
@@ -54,62 +81,133 @@ header a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
 }
 
 .social-user-name {
-  color: #666;
+  color: #6b7280;
   font-size: 0.85rem;
 }
 
+.social-user-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .social-user-actions button {
-  margin-left: 8px;
+  margin: 0;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #1f2937;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+}
+
+.social-user-actions button:hover {
+  border-color: #9ca3af;
+}
+
+.social-user-actions .unfriend-btn {
+  border-color: #fecaca;
+  color: #b91c1c;
+  background: #fff5f5;
 }
 
 .badge {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 999px;
-  background: #e5e7eb;
+  background: #e0e7ff;
+  color: #3730a3;
   font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.social-empty {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.92rem;
+}
+
+.social-chat-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.social-chat-title {
+  margin: 0 0 10px;
+  color: #1f2937;
 }
 
 .messages-list {
   display: flex;
   flex-direction: column;
-  max-height: 300px;
+  min-height: 320px;
+  max-height: 430px;
   overflow-y: auto;
-  margin-bottom: 12px;
-  padding-right: 4px;
+  margin-bottom: 14px;
+  padding: 10px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f8fafc;
 }
 
 .message {
-  padding: 6px 10px;
-  border-radius: 12px;
-  margin-bottom: 6px;
+  padding: 9px 12px;
+  border-radius: 14px;
+  margin-bottom: 8px;
   max-width: 80%;
+  line-height: 1.4;
+  font-size: 0.92rem;
 }
 
 .message-incoming {
   background: #e5e7eb;
+  color: #1f2937;
   align-self: flex-start;
 }
 
 .message-outgoing {
-  background: #2563eb;
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
   color: #fff;
   margin-left: auto;
 }
 
 .message-form {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  align-items: center;
 }
 
 .message-form input {
   flex: 1;
   margin-bottom: 0;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 10px 14px;
+}
+
+.message-form button {
+  border-radius: 999px;
+  padding: 10px 16px;
+}
+
+@media (max-width: 960px) {
+  .social-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .messages-list {
+    min-height: 250px;
+  }
 }
 
 /* homepage */
@@ -122,6 +220,14 @@ header a {
 .recipes {
   display: flex;
   flex-direction: column;
+}
+
+.recipe-search-bar {
+  margin-bottom: 12px;
+}
+
+.recipe-search-bar input {
+  margin: 0;
 }
 
 .recipe-details {

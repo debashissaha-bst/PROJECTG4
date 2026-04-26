@@ -181,102 +181,111 @@ const Social = () => {
 
   return (
     <div className="social-page">
-      <h2>Social</h2>
+      <div className="social-hero">
+        <h2>Connect & Chat</h2>
+        <p>Manage friends, requests, and private messages.</p>
+      </div>
 
       {error && <div className="error">{error}</div>}
 
       <div className="social-layout">
         <div className="social-column">
-          <h3>Friends</h3>
-          {friends.length === 0 && <p>You have no friends yet.</p>}
-          {friends.map((f) => {
-            const friendUser = getFriendUserFromRelation(f)
-            if (!friendUser) return null
-            return (
-              <div key={f._id} className="social-user-card">
-                <div>
-                  <strong>{friendUser.email}</strong>
-                  {friendUser.name && (
-                    <span className="social-user-name"> ({friendUser.name})</span>
-                  )}
-                </div>
-                <div className="social-user-actions">
-                  <button type="button" onClick={() => loadMessages(friendUser)}>
-                    Message
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => navigate(`/profile/${friendUser._id}`)}
-                  >
-                    View profile
-                  </button>
-                  <button
-                    type="button"
-                    className="unfriend-btn"
-                    onClick={() => handleUnfriend(friendUser._id)}
-                  >
-                    Unfriend
-                  </button>
-                </div>
-              </div>
-            )
-          })}
-
-          <h3>All Users</h3>
-          {users.map((u) => {
-            const friendRel = findFriendRelationWith(u._id)
-            const outgoingReq = hasOutgoingTo(u._id)
-            const incomingReq = hasIncomingFrom(u._id)
-
-            return (
-              <div key={u._id} className="social-user-card">
-                <div>
-                  <strong>{u.email}</strong>
-                  {u.name && <span className="social-user-name"> ({u.name})</span>}
-                </div>
-                <div className="social-user-actions">
-                  {friendRel && (
-                    <span className="badge">Friend</span>
-                  )}
-                  {!friendRel && incomingReq && (
+          <section className="social-section">
+            <h3>Friends</h3>
+            {friends.length === 0 && <p className="social-empty">You have no friends yet.</p>}
+            {friends.map((f) => {
+              const friendUser = getFriendUserFromRelation(f)
+              if (!friendUser) return null
+              return (
+                <div key={f._id} className="social-user-card">
+                  <div>
+                    <strong>{friendUser.email}</strong>
+                    {friendUser.name && (
+                      <span className="social-user-name"> ({friendUser.name})</span>
+                    )}
+                  </div>
+                  <div className="social-user-actions">
+                    <button type="button" onClick={() => loadMessages(friendUser)}>
+                      Message
+                    </button>
                     <button
                       type="button"
-                      onClick={() => handleAcceptRequest(incomingReq._id)}
+                      onClick={() => navigate(`/profile/${friendUser._id}`)}
                     >
-                      Accept request
+                      View profile
                     </button>
-                  )}
-                  {!friendRel && !incomingReq && !outgoingReq && (
-                    <button type="button" onClick={() => handleSendRequest(u._id)}>
-                      Add friend
+                    <button
+                      type="button"
+                      className="unfriend-btn"
+                      onClick={() => handleUnfriend(friendUser._id)}
+                    >
+                      Unfriend
                     </button>
-                  )}
-                  {!friendRel && outgoingReq && (
-                    <span className="badge">Request sent</span>
-                  )}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </section>
 
-          <h3>Incoming requests</h3>
-          {incoming.length === 0 && <p>No incoming requests.</p>}
-          {incoming.map((r) => (
-            <div key={r._id} className="social-request-card">
-              <span>{r.from.email}</span>
-              <button type="button" onClick={() => handleAcceptRequest(r._id)}>
-                Accept
-              </button>
-            </div>
-          ))}
+          <section className="social-section">
+            <h3>All Users</h3>
+            {users.map((u) => {
+              const friendRel = findFriendRelationWith(u._id)
+              const outgoingReq = hasOutgoingTo(u._id)
+              const incomingReq = hasIncomingFrom(u._id)
+
+              return (
+                <div key={u._id} className="social-user-card">
+                  <div>
+                    <strong>{u.email}</strong>
+                    {u.name && <span className="social-user-name"> ({u.name})</span>}
+                  </div>
+                  <div className="social-user-actions">
+                    {friendRel && (
+                      <span className="badge">Friend</span>
+                    )}
+                    {!friendRel && incomingReq && (
+                      <button
+                        type="button"
+                        onClick={() => handleAcceptRequest(incomingReq._id)}
+                      >
+                        Accept request
+                      </button>
+                    )}
+                    {!friendRel && !incomingReq && !outgoingReq && (
+                      <button type="button" onClick={() => handleSendRequest(u._id)}>
+                        Add friend
+                      </button>
+                    )}
+                    {!friendRel && outgoingReq && (
+                      <span className="badge">Request sent</span>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </section>
+
+          <section className="social-section">
+            <h3>Incoming requests</h3>
+            {incoming.length === 0 && <p className="social-empty">No incoming requests.</p>}
+            {incoming.map((r) => (
+              <div key={r._id} className="social-request-card">
+                <span>{r.from.email}</span>
+                <button type="button" onClick={() => handleAcceptRequest(r._id)}>
+                  Accept
+                </button>
+              </div>
+            ))}
+          </section>
         </div>
 
-        <div className="social-column">
+        <div className="social-column social-chat-column">
           <h3>Messages</h3>
-          {!selectedFriend && <p>Select a friend to start chatting.</p>}
+          {!selectedFriend && <p className="social-empty">Select a friend to start chatting.</p>}
           {selectedFriend && (
             <>
-              <h4>Chat with {selectedFriend.email}</h4>
+              <h4 className="social-chat-title">Chat with {selectedFriend.email}</h4>
               <div className="messages-list">
                 {messages.map((m) => {
                   const isIncoming =

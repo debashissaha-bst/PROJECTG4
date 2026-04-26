@@ -12,6 +12,8 @@ import Profile from './pages/Profile'
 import Favourites from './pages/Favourites'
 import FriendProfile from './pages/FriendProfile'
 import Social from './pages/Social'
+import CookingHistory from './pages/CookingHistory'
+import PersonalizedMeals from './pages/PersonalizedMeals'
 import Navbar from './components/Navbar'
 
 function App() {
@@ -54,6 +56,14 @@ function App() {
             <Route 
               path="/social" 
               element={user ? <Social /> : <Navigate to="/login" />} 
+            />
+            <Route
+              path="/cooking-history"
+              element={user ? <CookingHistory /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/personalized-meals"
+              element={user ? <PersonalizedMeals /> : <Navigate to="/login" />}
             />
             <Route 
               path="/login" 

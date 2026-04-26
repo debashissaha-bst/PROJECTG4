@@ -5,13 +5,33 @@ const mongoose = require('mongoose')
 
 const getRecipes = async (req, res) => {
   const user_id = req.user._id
-  const recipes = await Recipe.find({ user_id }).sort({ createdAt: -1 })
+  const rawSearch = typeof req.query.search === 'string' ? req.query.search.trim() : ''
+  const query = { user_id }
+
+  if (rawSearch) {
+    query.$or = [
+      { title: { $regex: rawSearch, $options: 'i' } },
+      { 'ingredients.name': { $regex: rawSearch, $options: 'i' } }
+    ]
+  }
+
+  const recipes = await Recipe.find(query).sort({ createdAt: -1 })
   res.status(200).json(recipes)
 }
 
 const getPublicRecipes = async (req, res) => {
   try {
-    const recipes = await Recipe.find({ isPublic: true }).sort({ createdAt: -1 })
+    const rawSearch = typeof req.query.search === 'string' ? req.query.search.trim() : ''
+    const query = { isPublic: true }
+
+    if (rawSearch) {
+      query.$or = [
+        { title: { $regex: rawSearch, $options: 'i' } },
+        { 'ingredients.name': { $regex: rawSearch, $options: 'i' } }
+      ]
+    }
+
+    const recipes = await Recipe.find(query).sort({ createdAt: -1 })
     res.status(200).json(recipes)
   } catch (error) {
     res.status(400).json({ error: error.message })

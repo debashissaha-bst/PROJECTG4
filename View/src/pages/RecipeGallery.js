@@ -11,12 +11,16 @@ const RecipeGallery = () => {
   const [openReviewsFor, setOpenReviewsFor] = useState({})
   const [reviewsByRecipe, setReviewsByRecipe] = useState({})
   const [reviewsLoading, setReviewsLoading] = useState({})
+  const [searchTerm, setSearchTerm] = useState('')
   const { user } = useAuthContext()
 
   useEffect(() => {
     const fetchPublicRecipes = async () => {
       try {
-        const response = await fetch('/api/recipes/public')
+        const query = searchTerm.trim()
+          ? `?search=${encodeURIComponent(searchTerm.trim())}`
+          : ''
+        const response = await fetch(`/api/recipes/public${query}`)
         const json = await response.json()
 
         if (!response.ok) {
@@ -31,7 +35,7 @@ const RecipeGallery = () => {
     }
 
     fetchPublicRecipes()
-  }, [])
+  }, [searchTerm])
 
   useEffect(() => {
     const fetchCookedIds = async () => {
@@ -215,9 +219,19 @@ const RecipeGallery = () => {
   return (
     <div className="home">
       <div className="recipes">
+        <div className="recipe-search-bar">
+          <input
+            type="text"
+            value={searchTerm}
+            placeholder="Search by recipe name or ingredient..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
         {error && <div className="error">{error}</div>}
         {success && <div className="success">{success}</div>}
-        {recipes.length === 0 && !error && <p>No public recipes yet.</p>}
+        {recipes.length === 0 && !error && (
+          <p>{searchTerm.trim() ? 'No recipes found for your search.' : 'No public recipes yet.'}</p>
+        )}
         {recipes.map((recipe) => (
           <div key={recipe._id}>
             <RecipeDetails

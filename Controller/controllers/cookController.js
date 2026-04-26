@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const CookSession = require('../../model/models/cookSessionModel')
 const Recipe = require('../../model/models/recipeModel')
 const User = require('../../model/models/userModel')
+const Review = require('../../model/models/reviewModel')
 
 const startCooking = async (req, res) => {
   const { recipeId } = req.body
@@ -111,10 +112,55 @@ const getCookedRecipeIds = async (req, res) => {
   }
 }
 
+const getCookingHistory = async (req, res) => {
+  try {
+    const user_id = req.user._id
+
+    const sessions = await CookSession.find({ user_id, status: 'finished' })
+      .sort({ finishedAt: -1, createdAt: -1 })
+      .populate('recipe_id', 'title')
+      .lean()
+
+    if (!sessions.length) {
+      return res.status(200).json([])
+    }
+
+    const history = await Promise.all(
+      sessions.map(async (session) => {
+        const latestReview = await Review.findOne({
+          user_id,
+          recipe_id: session.recipe_id?._id || session.recipe_id
+        })
+          .sort({ createdAt: -1 })
+          .select('comment createdAt')
+          .lean()
+
+        return {
+          sessionId: session._id,
+          recipeId: session.recipe_id?._id || null,
+          recipeTitle: session.recipe_id?.title || 'Unknown recipe',
+          cookedAt: session.finishedAt || session.updatedAt || session.createdAt,
+          review: latestReview
+            ? {
+                comment: latestReview.comment,
+                reviewedAt: latestReview.createdAt
+              }
+            : null
+        }
+      })
+    )
+
+    res.status(200).json(history)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}
+
 module.exports = {
   startCooking,
   getActiveCooking,
   finishCooking,
-  getCookedRecipeIds
+  getCookedRecipeIds,
+  getCookingHistory
 }
 
