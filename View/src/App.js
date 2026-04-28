@@ -14,10 +14,15 @@ import FriendProfile from './pages/FriendProfile'
 import Social from './pages/Social'
 import CookingHistory from './pages/CookingHistory'
 import PersonalizedMeals from './pages/PersonalizedMeals'
+import Trash from './pages/Trash'
 import Navbar from './components/Navbar'
 
 function App() {
-  const { user } = useAuthContext()
+  const { user, authIsReady } = useAuthContext()
+
+  if (!authIsReady) {
+    return null
+  }
 
   return (
     <div className="App">
@@ -40,6 +45,10 @@ function App() {
             <Route 
               path="/chat" 
               element={user ? <Chat /> : <Navigate to="/login" />} 
+            />
+            <Route
+              path="/trash"
+              element={user ? <Trash /> : <Navigate to="/login" />}
             />
             <Route 
               path="/profile" 

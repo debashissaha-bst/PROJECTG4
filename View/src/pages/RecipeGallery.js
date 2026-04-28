@@ -218,7 +218,7 @@ const RecipeGallery = () => {
 
   return (
     <div className="home">
-      <div className="recipes">
+      <div className="recipes gallery-page">
         <div className="recipe-search-bar">
           <input
             type="text"
@@ -233,54 +233,60 @@ const RecipeGallery = () => {
           <p>{searchTerm.trim() ? 'No recipes found for your search.' : 'No public recipes yet.'}</p>
         )}
         {recipes.map((recipe) => (
-          <div key={recipe._id}>
-            <RecipeDetails
-              recipe={recipe}
-              hideDelete
-              onLike={() => handleLike(recipe._id)}
-              onFavourite={() => handleFavourite(recipe._id)}
-              favouriteLabel="Save to favourite"
-            />
+          <div key={recipe._id} className="gallery-meal-card">
+            <div className="gallery-meal-layout">
+              <RecipeDetails
+                recipe={recipe}
+                hideDelete
+                onLike={() => handleLike(recipe._id)}
+                onFavourite={() => handleFavourite(recipe._id)}
+                favouriteLabel="Save to favourite"
+              />
 
-            <div className="recipe-details" style={{ marginTop: 0 }}>
-              <div className="recipe-actions">
-                <button type="button" onClick={() => handleCook(recipe._id)}>
-                  Cook
-                </button>
-                <button type="button" onClick={() => handleTogglePreviousReviews(recipe._id)}>
-                  Previous reviews
-                </button>
+              <div className="gallery-side-stack">
+              <div className="gallery-side-panel">
+                <p className="gallery-panel-title"><strong>Cook</strong></p>
+                <div className="recipe-actions">
+                  <button type="button" className="btn-cook" onClick={() => handleCook(recipe._id)}>
+                    Start Cooking
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-previous-reviews"
+                    onClick={() => handleTogglePreviousReviews(recipe._id)}
+                  >
+                    Previous reviews
+                  </button>
+                </div>
+
+                {openReviewsFor[recipe._id] && (
+                  <div className="gallery-previous-reviews">
+                    <p className="gallery-panel-subtitle">
+                      <strong>Recent reviews:</strong>
+                    </p>
+                    {reviewsLoading[recipe._id] && <p>Loading...</p>}
+                    {!reviewsLoading[recipe._id] &&
+                      Array.isArray(reviewsByRecipe[recipe._id]) &&
+                      reviewsByRecipe[recipe._id].length === 0 && (
+                        <p>No reviews yet.</p>
+                      )}
+                    {!reviewsLoading[recipe._id] &&
+                      Array.isArray(reviewsByRecipe[recipe._id]) &&
+                      reviewsByRecipe[recipe._id].length > 0 && (
+                        <ul className="review-list">
+                          {reviewsByRecipe[recipe._id].slice(0, 5).map((r, idx) => (
+                            <li key={r._id || idx} className="review-item">
+                              {r.comment}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                  </div>
+                )}
               </div>
 
-              {openReviewsFor[recipe._id] && (
-                <div style={{ marginTop: 10 }}>
-                  <p style={{ marginBottom: 8 }}>
-                    <strong>Recent reviews:</strong>
-                  </p>
-                  {reviewsLoading[recipe._id] && <p>Loading...</p>}
-                  {!reviewsLoading[recipe._id] &&
-                    Array.isArray(reviewsByRecipe[recipe._id]) &&
-                    reviewsByRecipe[recipe._id].length === 0 && (
-                      <p>No reviews yet.</p>
-                    )}
-                  {!reviewsLoading[recipe._id] &&
-                    Array.isArray(reviewsByRecipe[recipe._id]) &&
-                    reviewsByRecipe[recipe._id].length > 0 && (
-                      <ul className="review-list">
-                        {reviewsByRecipe[recipe._id].slice(0, 5).map((r, idx) => (
-                          <li key={r._id || idx} className="review-item">
-                            {r.comment}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                </div>
-              )}
-
-              <div style={{ marginTop: 10 }}>
-                <p style={{ marginBottom: 8 }}>
-                  <strong>Review (only after cooking):</strong>
-                </p>
+              <div className="gallery-side-panel">
+                <p className="gallery-panel-title"><strong>Review (after cooking)</strong></p>
                 <textarea
                   value={reviewDrafts[recipe._id] || ''}
                   onChange={(e) =>
@@ -296,12 +302,14 @@ const RecipeGallery = () => {
                 <div className="recipe-actions">
                   <button
                     type="button"
+                    className="btn-submit-review"
                     onClick={() => handleSubmitReview(recipe._id)}
                     disabled={!cookedIds.has(String(recipe._id))}
                   >
                     Submit Review
                   </button>
                 </div>
+              </div>
               </div>
             </div>
           </div>

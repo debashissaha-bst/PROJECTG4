@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { useLogout } from '../hooks/useLogout'
 import { useAuthContext } from '../hooks/useAuthContext'
 
@@ -11,24 +11,35 @@ const Navbar = () => {
   }
 
   return (
-    <header>
-      <div className="container">
-        <Link to="/">
+    <header className="app-header">
+      <div className="container navbar-container">
+        <Link to="/" className="brand-link">
           <h1>Recipe and Cooking Platform</h1>
         </Link>
-        <nav>
+        <nav className="top-nav">
           {user && (
-            <div>
-              <span>{user.email}</span>
-              <Link to="/social">Social</Link>
-              <Link to="/profile">Profile</Link>
-              <button onClick={handleClick}>Log out</button>
+            <div className="nav-signed-in">
+              <div className="nav-links">
+                <NavLink to="/">Home</NavLink>
+                <NavLink to="/recipes">Recipes</NavLink>
+                <NavLink to="/gallery">Gallery</NavLink>
+                <NavLink to="/personalized-meals">Meals</NavLink>
+                <NavLink to="/favourites">Favourites</NavLink>
+                <NavLink to="/cooking-history">History</NavLink>
+                <NavLink to="/social">Social</NavLink>
+                <NavLink to="/chat">AI Chat</NavLink>
+              </div>
+              <div className="nav-user">
+                <span>{user.email}</span>
+                <NavLink to="/profile" className="profile-link">Profile</NavLink>
+                <button type="button" onClick={handleClick}>Log out</button>
+              </div>
             </div>
           )}
           {!user && (
-            <div>
-              <Link to="/login">Login</Link>
-              <Link to="/signup">Signup</Link>
+            <div className="nav-auth-links">
+              <NavLink to="/login">Login</NavLink>
+              <NavLink to="/signup">Signup</NavLink>
             </div>
           )}
         </nav>

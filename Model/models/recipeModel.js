@@ -18,6 +18,8 @@ const recipeSchema = new Schema({
   ownerEmail: { type: String },
   likes: { type: Number, default: 0 },
   isPublic: { type: Boolean, default: false },
+  isTrashed: { type: Boolean, default: false },
+  trashedAt: { type: Date, default: null },
   user_id: { type: String, required: true }
 }, { timestamps: true })
 module.exports = mongoose.model('Recipe', recipeSchema)

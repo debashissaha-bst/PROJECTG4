@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useRecipesContext } from '../hooks/useRecipesContext'
 import { useAuthContext } from '../hooks/useAuthContext'
 
@@ -32,8 +33,14 @@ const Recipes = () => {
   }, [dispatch, user, searchTerm])
 
   return (
-    <div className="home">
-      <div className="recipes">
+    <div className="recipes-page">
+      <div className="recipes recipes-list-column">
+        <div className="recipes-toolbar">
+          <h2 className="recipes-title">Recipes</h2>
+          <Link to="/trash" className="recipes-trash-link">
+            Trash
+          </Link>
+        </div>
         <div className="recipe-search-bar">
           <input
             type="text"
@@ -50,7 +57,9 @@ const Recipes = () => {
           <p>No recipes found for your search.</p>
         )}
       </div>
-      <RecipeForm />
+      <div className="recipes-form-column">
+        <RecipeForm />
+      </div>
     </div>
   )
 }

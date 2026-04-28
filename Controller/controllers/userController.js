@@ -170,4 +170,25 @@ const getProgress = async (req, res) => {
   }
 }
 
-module.exports = { signupUser, loginUser, getProfile, updateProfile, getFriendProfile, getProgress }
+const getLeaderboard = async (req, res) => {
+  try {
+    const leaderboard = await User.find({})
+      .select('name email points')
+      .sort({ points: -1, email: 1 })
+      .limit(10)
+      .lean()
+
+    res.status(200).json(
+      leaderboard.map((u) => ({
+        _id: u._id,
+        name: u.name || '',
+        email: u.email,
+        points: u.points || 0
+      }))
+    )
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}
+
+module.exports = { signupUser, loginUser, getProfile, updateProfile, getFriendProfile, getProgress, getLeaderboard }

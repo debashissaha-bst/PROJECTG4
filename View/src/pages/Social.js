@@ -62,6 +62,8 @@ const Social = () => {
   const hasIncomingFrom = (userId) =>
     incoming.find((r) => r.from._id === userId)
 
+  const visibleUsers = users.filter((u) => !findFriendRelationWith(u._id))
+
   const handleSendRequest = async (toUserId) => {
     setError(null)
     try {
@@ -229,8 +231,10 @@ const Social = () => {
 
           <section className="social-section">
             <h3>All Users</h3>
-            {users.map((u) => {
-              const friendRel = findFriendRelationWith(u._id)
+            {visibleUsers.length === 0 && (
+              <p className="social-empty">No non-friend users to show right now.</p>
+            )}
+            {visibleUsers.map((u) => {
               const outgoingReq = hasOutgoingTo(u._id)
               const incomingReq = hasIncomingFrom(u._id)
 
@@ -241,10 +245,7 @@ const Social = () => {
                     {u.name && <span className="social-user-name"> ({u.name})</span>}
                   </div>
                   <div className="social-user-actions">
-                    {friendRel && (
-                      <span className="badge">Friend</span>
-                    )}
-                    {!friendRel && incomingReq && (
+                    {incomingReq && (
                       <button
                         type="button"
                         onClick={() => handleAcceptRequest(incomingReq._id)}
@@ -252,12 +253,12 @@ const Social = () => {
                         Accept request
                       </button>
                     )}
-                    {!friendRel && !incomingReq && !outgoingReq && (
+                    {!incomingReq && !outgoingReq && (
                       <button type="button" onClick={() => handleSendRequest(u._id)}>
                         Add friend
                       </button>
                     )}
-                    {!friendRel && outgoingReq && (
+                    {outgoingReq && (
                       <span className="badge">Request sent</span>
                     )}
                   </div>

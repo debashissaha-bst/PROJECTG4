@@ -6,7 +6,7 @@ const mongoose = require('mongoose')
 const getRecipes = async (req, res) => {
   const user_id = req.user._id
   const rawSearch = typeof req.query.search === 'string' ? req.query.search.trim() : ''
-  const query = { user_id }
+  const query = { user_id, isTrashed: { $ne: true } }
 
   if (rawSearch) {
     query.$or = [
@@ -22,7 +22,7 @@ const getRecipes = async (req, res) => {
 const getPublicRecipes = async (req, res) => {
   try {
     const rawSearch = typeof req.query.search === 'string' ? req.query.search.trim() : ''
-    const query = { isPublic: true }
+    const query = { isPublic: true, isTrashed: { $ne: true } }
 
     if (rawSearch) {
       query.$or = [
@@ -38,6 +38,12 @@ const getPublicRecipes = async (req, res) => {
   }
 }
 
+const getTrashedRecipes = async (req, res) => {
+  const user_id = req.user._id
+  const recipes = await Recipe.find({ user_id, isTrashed: true }).sort({ trashedAt: -1, updatedAt: -1 })
+  res.status(200).json(recipes)
+}
+
 const getRecipe = async (req, res) => {
   const { id } = req.params
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -45,6 +51,7 @@ const getRecipe = async (req, res) => {
   }
   const recipe = await Recipe.findById(id)
   if (!recipe) return res.status(404).json({error: 'No such recipe'})
+  if (recipe.isTrashed) return res.status(404).json({ error: 'No such recipe' })
   res.status(200).json(recipe)
 }
 
@@ -110,13 +117,43 @@ const createRecipe = async (req, res) => {
   }
 }
 
-const deleteRecipe = async (req, res) => {
+const trashRecipe = async (req, res) => {
   const { id } = req.params
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({error: 'No such recipe'})
   }
-  const recipe = await Recipe.findOneAndDelete({_id: id})
+  const recipe = await Recipe.findOneAndUpdate(
+    { _id: id, user_id: String(req.user._id) },
+    { isTrashed: true, trashedAt: new Date(), isPublic: false },
+    { new: true }
+  )
   if (!recipe) return res.status(400).json({error: 'No such recipe'})
+  res.status(200).json(recipe)
+}
+
+const restoreRecipe = async (req, res) => {
+  const { id } = req.params
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'No such recipe' })
+  }
+
+  const recipe = await Recipe.findOneAndUpdate(
+    { _id: id, user_id: String(req.user._id), isTrashed: true },
+    { isTrashed: false, trashedAt: null },
+    { new: true }
+  )
+  if (!recipe) return res.status(404).json({ error: 'Recipe not found in trash' })
+  res.status(200).json(recipe)
+}
+
+const permanentlyDeleteRecipe = async (req, res) => {
+  const { id } = req.params
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'No such recipe' })
+  }
+
+  const recipe = await Recipe.findOneAndDelete({ _id: id, user_id: String(req.user._id), isTrashed: true })
+  if (!recipe) return res.status(404).json({ error: 'Recipe not found in trash' })
   res.status(200).json(recipe)
 }
 
@@ -192,7 +229,10 @@ module.exports = {
   getRecipes,
   getRecipe,
   createRecipe,
-  deleteRecipe,
+  trashRecipe,
+  getTrashedRecipes,
+  restoreRecipe,
+  permanentlyDeleteRecipe,
   updateRecipe,
   getPublicRecipes,
   updateVisibility,
