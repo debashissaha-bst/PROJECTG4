@@ -1,31 +1,130 @@
 const MEAL_DATASET = [
+  // Breakfast - 15
   {
     id: 'b1',
-    name: 'Veggie Oats Bowl',
+    name: 'Vegetable Khichuri',
     mealType: 'breakfast',
-    tags: ['Vegetarian', 'Balanced', 'Low-Carb'],
+    tags: ['Vegetarian', 'Balanced', 'Gluten-Free'],
     ageTypes: ['child', 'teen', 'adult', 'senior'],
-    allergens: ['gluten']
+    allergens: []
   },
   {
     id: 'b2',
-    name: 'Greek Yogurt Berry Cup',
+    name: 'Egg Paratha',
     mealType: 'breakfast',
-    tags: ['Vegetarian', 'Gluten-Free', 'Balanced', 'Low-Carb'],
+    tags: ['Balanced'],
+    ageTypes: ['teen', 'adult'],
+    allergens: ['egg', 'gluten']
+  },
+  {
+    id: 'b3',
+    name: 'Flattened Rice with Yogurt and Banana',
+    mealType: 'breakfast',
+    tags: ['Vegetarian', 'Balanced', 'Gluten-Free'],
     ageTypes: ['child', 'teen', 'adult', 'senior'],
     allergens: ['dairy']
   },
   {
-    id: 'b3',
-    name: 'Scrambled Egg Spinach Plate',
+    id: 'b4',
+    name: 'Roti with Mixed Vegetables',
+    mealType: 'breakfast',
+    tags: ['Vegetarian', 'Balanced'],
+    ageTypes: ['child', 'teen', 'adult', 'senior'],
+    allergens: ['gluten']
+  },
+  {
+    id: 'b5',
+    name: 'Suji Halwa',
+    mealType: 'breakfast',
+    tags: ['Vegetarian'],
+    ageTypes: ['child', 'teen', 'adult'],
+    allergens: ['gluten', 'dairy']
+  },
+  {
+    id: 'b6',
+    name: 'Dal Paratha',
+    mealType: 'breakfast',
+    tags: ['Vegetarian', 'Balanced'],
+    ageTypes: ['teen', 'adult', 'senior'],
+    allergens: ['gluten']
+  },
+  {
+    id: 'b7',
+    name: 'Fried Egg with Vegetables',
     mealType: 'breakfast',
     tags: ['Gluten-Free', 'Low-Carb', 'Balanced'],
     ageTypes: ['teen', 'adult', 'senior'],
     allergens: ['egg']
   },
   {
+    id: 'b8',
+    name: 'Puffed Rice Salad',
+    mealType: 'breakfast',
+    tags: ['Vegetarian', 'Balanced'],
+    ageTypes: ['teen', 'adult'],
+    allergens: []
+  },
+  {
+    id: 'b9',
+    name: 'Oats with Milk and Banana',
+    mealType: 'breakfast',
+    tags: ['Vegetarian', 'Balanced'],
+    ageTypes: ['child', 'teen', 'adult', 'senior'],
+    allergens: ['gluten', 'dairy']
+  },
+  {
+    id: 'b10',
+    name: 'Vegetable Omelette',
+    mealType: 'breakfast',
+    tags: ['Gluten-Free', 'Low-Carb', 'Balanced'],
+    ageTypes: ['teen', 'adult', 'senior'],
+    allergens: ['egg']
+  },
+  {
+    id: 'b11',
+    name: 'Chicken Paratha Roll',
+    mealType: 'breakfast',
+    tags: ['Balanced'],
+    ageTypes: ['teen', 'adult'],
+    allergens: ['gluten']
+  },
+  {
+    id: 'b12',
+    name: 'Mutton Keema Paratha',
+    mealType: 'breakfast',
+    tags: ['Balanced'],
+    ageTypes: ['adult'],
+    allergens: ['gluten']
+  },
+  {
+    id: 'b13',
+    name: 'Duck Egg Omelette',
+    mealType: 'breakfast',
+    tags: ['Gluten-Free', 'Low-Carb', 'Balanced'],
+    ageTypes: ['teen', 'adult', 'senior'],
+    allergens: ['egg']
+  },
+  {
+    id: 'b14',
+    name: 'Hilsa with Panta',
+    mealType: 'breakfast',
+    tags: ['Gluten-Free', 'Balanced'],
+    ageTypes: ['adult', 'senior'],
+    allergens: ['hilsa']
+  },
+  {
+    id: 'b15',
+    name: 'Chicken Suji Khichuri',
+    mealType: 'breakfast',
+    tags: ['Balanced'],
+    ageTypes: ['child', 'teen', 'adult'],
+    allergens: ['gluten']
+  },
+
+  // Lunch - 15
+  {
     id: 'l1',
-    name: 'Quinoa Chickpea Salad',
+    name: 'Rice with Dal and Vegetables',
     mealType: 'lunch',
     tags: ['Vegetarian', 'Gluten-Free', 'Balanced'],
     ageTypes: ['child', 'teen', 'adult', 'senior'],
@@ -33,23 +132,121 @@ const MEAL_DATASET = [
   },
   {
     id: 'l2',
-    name: 'Grilled Chicken Lettuce Wrap',
+    name: 'Chicken Rice with Salad',
+    mealType: 'lunch',
+    tags: ['Gluten-Free', 'Balanced'],
+    ageTypes: ['teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'l3',
+    name: 'Rui Curry with Rice',
+    mealType: 'lunch',
+    tags: ['Gluten-Free', 'Balanced'],
+    ageTypes: ['child', 'teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'l4',
+    name: 'Khichuri with Egg',
+    mealType: 'lunch',
+    tags: ['Gluten-Free', 'Balanced'],
+    ageTypes: ['teen', 'adult', 'senior'],
+    allergens: ['egg']
+  },
+  {
+    id: 'l5',
+    name: 'Dal Khichuri',
+    mealType: 'lunch',
+    tags: ['Vegetarian', 'Gluten-Free', 'Balanced'],
+    ageTypes: ['child', 'teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'l6',
+    name: 'Hilsa Curry',
+    mealType: 'lunch',
+    tags: ['Gluten-Free', 'Balanced'],
+    ageTypes: ['adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'l7',
+    name: 'Vegetable Pulao',
+    mealType: 'lunch',
+    tags: ['Vegetarian', 'Gluten-Free', 'Balanced'],
+    ageTypes: ['child', 'teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'l8',
+    name: 'Chicken Vegetable Bowl',
     mealType: 'lunch',
     tags: ['Gluten-Free', 'Low-Carb', 'Balanced'],
     ageTypes: ['teen', 'adult', 'senior'],
     allergens: []
   },
   {
-    id: 'l3',
-    name: 'Tofu Stir Fry',
+    id: 'l9',
+    name: 'Egg Bhuna',
     mealType: 'lunch',
-    tags: ['Vegetarian', 'Balanced', 'Low-Carb'],
+    tags: ['Gluten-Free', 'Balanced'],
     ageTypes: ['teen', 'adult', 'senior'],
-    allergens: ['soy']
+    allergens: ['egg']
   },
   {
+    id: 'l10',
+    name: 'Chickpea Salad',
+    mealType: 'lunch',
+    tags: ['Vegetarian', 'Gluten-Free', 'Low-Carb', 'Balanced'],
+    ageTypes: ['teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'l11',
+    name: 'Mutton Curry',
+    mealType: 'lunch',
+    tags: ['Gluten-Free', 'Balanced'],
+    ageTypes: ['adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'l12',
+    name: 'Duck Curry',
+    mealType: 'lunch',
+    tags: ['Gluten-Free', 'Balanced'],
+    ageTypes: ['adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'l13',
+    name: 'Pabda Curry',
+    mealType: 'lunch',
+    tags: ['Gluten-Free', 'Balanced'],
+    ageTypes: ['teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'l14',
+    name: 'Katla Curry with Vegetables',
+    mealType: 'lunch',
+    tags: ['Gluten-Free', 'Balanced'],
+    ageTypes: ['child', 'teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'l15',
+    name: 'Biryani',
+    mealType: 'lunch',
+    tags: ['Balanced'],
+    ageTypes: ['teen', 'adult'],
+    allergens: []
+  },
+
+  // Dinner - 15
+  {
     id: 'd1',
-    name: 'Lentil Soup with Veggies',
+    name: 'Lentil Soup',
     mealType: 'dinner',
     tags: ['Vegetarian', 'Gluten-Free', 'Balanced'],
     ageTypes: ['child', 'teen', 'adult', 'senior'],
@@ -57,21 +254,117 @@ const MEAL_DATASET = [
   },
   {
     id: 'd2',
-    name: 'Baked Salmon and Greens',
-    mealType: 'dinner',
-    tags: ['Gluten-Free', 'Low-Carb', 'Balanced'],
-    ageTypes: ['adult', 'senior'],
-    allergens: ['fish']
-  },
-  {
-    id: 'd3',
-    name: 'Turkey Veggie Bowl',
+    name: 'Chicken Curry with Vegetables',
     mealType: 'dinner',
     tags: ['Gluten-Free', 'Low-Carb', 'Balanced'],
     ageTypes: ['teen', 'adult', 'senior'],
     allergens: []
+  },
+  {
+    id: 'd3',
+    name: 'Rui Curry with Vegetables',
+    mealType: 'dinner',
+    tags: ['Gluten-Free', 'Low-Carb', 'Balanced'],
+    ageTypes: ['child', 'teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'd4',
+    name: 'Mixed Vegetable',
+    mealType: 'dinner',
+    tags: ['Vegetarian', 'Gluten-Free', 'Low-Carb', 'Balanced'],
+    ageTypes: ['child', 'teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'd5',
+    name: 'Egg Curry',
+    mealType: 'dinner',
+    tags: ['Gluten-Free', 'Balanced'],
+    ageTypes: ['teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'd6',
+    name: 'Bottle Gourd with Shrimp',
+    mealType: 'dinner',
+    tags: ['Gluten-Free', 'Low-Carb', 'Balanced'],
+    ageTypes: ['adult', 'senior'],
+    allergens: ['shellfish']
+  },
+  {
+    id: 'd7',
+    name: 'Vegetable Dal',
+    mealType: 'dinner',
+    tags: ['Vegetarian', 'Gluten-Free', 'Balanced'],
+    ageTypes: ['child', 'teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'd8',
+    name: 'Chicken Soup',
+    mealType: 'dinner',
+    tags: ['Gluten-Free', 'Low-Carb', 'Balanced'],
+    ageTypes: ['child', 'teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'd9',
+    name: 'Spinach Dal',
+    mealType: 'dinner',
+    tags: ['Vegetarian', 'Gluten-Free', 'Low-Carb', 'Balanced'],
+    ageTypes: ['child', 'teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'd10',
+    name: 'Tilapia Curry',
+    mealType: 'dinner',
+    tags: ['Gluten-Free', 'Balanced'],
+    ageTypes: ['child', 'teen', 'adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'd11',
+    name: 'Mutton Stew with Vegetables',
+    mealType: 'dinner',
+    tags: ['Gluten-Free', 'Low-Carb', 'Balanced'],
+    ageTypes: ['adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'd12',
+    name: 'Duck Bhuna',
+    mealType: 'dinner',
+    tags: ['Gluten-Free', 'Balanced'],
+    ageTypes: ['adult', 'senior'],
+    allergens: []
+  },
+  {
+    id: 'd13',
+    name: 'Koi Curry with Vegetables',
+    mealType: 'dinner',
+    tags: ['Gluten-Free', 'Low-Carb', 'Balanced'],
+    ageTypes: ['teen', 'adult', 'senior'],
+    allergens: ['koi']
+  },
+  {
+    id: 'd14',
+    name: 'Pangash Curry',
+    mealType: 'dinner',
+    tags: ['Gluten-Free', 'Balanced'],
+    ageTypes: ['teen', 'adult', 'senior'],
+    allergens: ['pangash']
+  },
+  {
+    id: 'd15',
+    name: 'Chicken Vegetable Stew',
+    mealType: 'dinner',
+    tags: ['Gluten-Free', 'Low-Carb', 'Balanced'],
+    ageTypes: ['child', 'teen', 'adult', 'senior'],
+    allergens: []
   }
-]
+] 
 
 const randomItem = (items) => items[Math.floor(Math.random() * items.length)]
 
