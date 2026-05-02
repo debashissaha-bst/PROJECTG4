@@ -4,6 +4,7 @@ const {
   listRequestsAndFriends,
   sendFriendRequest,
   acceptFriendRequest,
+  cancelFriendRequest,
   getMessages,
   sendMessage,
   unfriend
@@ -18,6 +19,7 @@ router.get('/users', listUsers)
 router.get('/requests', listRequestsAndFriends)
 router.post('/requests', sendFriendRequest)
 router.patch('/requests/:id/accept', acceptFriendRequest)
+router.delete('/requests/:id', cancelFriendRequest)
 router.get('/messages/:friendId', getMessages)
 router.post('/messages/:friendId', sendMessage)
 router.delete('/friends/:friendId', unfriend)

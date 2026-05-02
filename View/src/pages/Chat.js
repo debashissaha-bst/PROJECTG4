@@ -70,14 +70,11 @@ const Chat = () => {
           ×
         </button>
       </div>
-      <p className="chat-subtitle">Powered by Llama 3.1 8B</p>
+      <p className="chat-subtitle">Send a message to start the conversation.</p>
 
       {error && <div className="error">{error}</div>}
 
       <div className="chat-messages">
-        {messages.length === 0 && (
-          <p className="chat-placeholder">Send a message to start the conversation.</p>
-        )}
         {messages.map((m, i) => (
           <div
             key={i}

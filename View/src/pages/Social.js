@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../hooks/useAuthContext'
+import ConfirmDialog from '../components/ConfirmDialog'
 
 const Social = () => {
   const { user } = useAuthContext()
@@ -11,6 +12,7 @@ const Social = () => {
   const [outgoing, setOutgoing] = useState([])
   const [friends, setFriends] = useState([])
   const [selectedFriend, setSelectedFriend] = useState(null)
+  const [confirmUnfriendTarget, setConfirmUnfriendTarget] = useState(null)
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [error, setError] = useState(null)
@@ -56,9 +58,6 @@ const Social = () => {
       (f) => f.from._id === userId || f.to._id === userId
     )
 
-  const hasOutgoingTo = (userId) =>
-    outgoing.some((r) => r.to._id === userId)
-
   const hasIncomingFrom = (userId) =>
     incoming.find((r) => r.from._id === userId)
 
@@ -101,6 +100,24 @@ const Social = () => {
       await loadData()
     } catch (e) {
       setError('Failed to accept request')
+    }
+  }
+
+  const handleCancelRequest = async (requestId) => {
+    setError(null)
+    try {
+      const res = await fetch(`/api/social/requests/${requestId}`, {
+        method: 'DELETE',
+        headers: tokenHeader
+      })
+      const json = await res.json()
+      if (!res.ok) {
+        setError(json.error || 'Failed to cancel request')
+        return
+      }
+      await loadData()
+    } catch (e) {
+      setError('Failed to cancel request')
     }
   }
 
@@ -163,6 +180,7 @@ const Social = () => {
         setSelectedFriend(null)
         setMessages([])
       }
+      setConfirmUnfriendTarget(null)
       await loadData()
     } catch (e) {
       setError('Failed to unfriend')
@@ -171,10 +189,11 @@ const Social = () => {
 
   const getFriendUserFromRelation = (relation) => {
     if (!relation) return null
-    if (relation.from && relation.from._id && relation.from._id !== user.id && relation.from._id !== user._id) {
-      return relation.from
-    }
-    return relation.to
+    const myEmail = user?.email || ''
+    if (relation.from?.email && relation.from.email !== myEmail) return relation.from
+    if (relation.to?.email && relation.to.email !== myEmail) return relation.to
+    // fallback
+    return relation.to || relation.from || null
   }
 
   if (!user) {
@@ -183,6 +202,20 @@ const Social = () => {
 
   return (
     <div className="social-page">
+      <ConfirmDialog
+        open={!!confirmUnfriendTarget}
+        title="Unfriend user?"
+        message={
+          confirmUnfriendTarget
+            ? `This will remove ${confirmUnfriendTarget.email} from your friends list.`
+            : 'This will remove this user from your friends list.'
+        }
+        confirmText="Unfriend"
+        cancelText="Cancel"
+        tone="danger"
+        onCancel={() => setConfirmUnfriendTarget(null)}
+        onConfirm={() => handleUnfriend(confirmUnfriendTarget._id)}
+      />
       <div className="social-hero">
         <h2>Connect & Chat</h2>
         <p>Manage friends, requests, and private messages.</p>
@@ -193,7 +226,10 @@ const Social = () => {
       <div className="social-layout">
         <div className="social-column">
           <section className="social-section">
-            <h3>Friends</h3>
+            <div className="social-section-title">
+              <h3>Friends</h3>
+              <span className="social-count">{friends.length}</span>
+            </div>
             {friends.length === 0 && <p className="social-empty">You have no friends yet.</p>}
             {friends.map((f) => {
               const friendUser = getFriendUserFromRelation(f)
@@ -219,7 +255,7 @@ const Social = () => {
                     <button
                       type="button"
                       className="unfriend-btn"
-                      onClick={() => handleUnfriend(friendUser._id)}
+                      onClick={() => setConfirmUnfriendTarget(friendUser)}
                     >
                       Unfriend
                     </button>
@@ -230,12 +266,33 @@ const Social = () => {
           </section>
 
           <section className="social-section">
-            <h3>All Users</h3>
+            <div className="social-section-title">
+              <h3>Outgoing requests</h3>
+              <span className="social-count">{outgoing.length}</span>
+            </div>
+            {outgoing.length === 0 && <p className="social-empty">No outgoing requests.</p>}
+            {outgoing.map((r) => (
+              <div key={r._id} className="social-request-card">
+                <span>{r.to.email}</span>
+                <div className="social-user-actions">
+                  <button type="button" className="social-btn social-btn--ghost" onClick={() => handleCancelRequest(r._id)}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ))}
+          </section>
+
+          <section className="social-section">
+            <div className="social-section-title">
+              <h3>Discover</h3>
+              <span className="social-count">{visibleUsers.length}</span>
+            </div>
             {visibleUsers.length === 0 && (
               <p className="social-empty">No non-friend users to show right now.</p>
             )}
             {visibleUsers.map((u) => {
-              const outgoingReq = hasOutgoingTo(u._id)
+              const outgoingReq = outgoing.find((r) => r.to._id === u._id) || null
               const incomingReq = hasIncomingFrom(u._id)
 
               return (
@@ -248,18 +305,28 @@ const Social = () => {
                     {incomingReq && (
                       <button
                         type="button"
+                        className="social-btn social-btn--primary"
                         onClick={() => handleAcceptRequest(incomingReq._id)}
                       >
                         Accept request
                       </button>
                     )}
                     {!incomingReq && !outgoingReq && (
-                      <button type="button" onClick={() => handleSendRequest(u._id)}>
+                      <button type="button" className="social-btn social-btn--primary" onClick={() => handleSendRequest(u._id)}>
                         Add friend
                       </button>
                     )}
                     {outgoingReq && (
-                      <span className="badge">Request sent</span>
+                      <>
+                        <span className="social-pill">Requested</span>
+                        <button
+                          type="button"
+                          className="social-btn social-btn--ghost"
+                          onClick={() => handleCancelRequest(outgoingReq._id)}
+                        >
+                          Cancel
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -268,12 +335,15 @@ const Social = () => {
           </section>
 
           <section className="social-section">
-            <h3>Incoming requests</h3>
+            <div className="social-section-title">
+              <h3>Incoming requests</h3>
+              <span className="social-count">{incoming.length}</span>
+            </div>
             {incoming.length === 0 && <p className="social-empty">No incoming requests.</p>}
             {incoming.map((r) => (
               <div key={r._id} className="social-request-card">
                 <span>{r.from.email}</span>
-                <button type="button" onClick={() => handleAcceptRequest(r._id)}>
+                <button type="button" className="social-btn social-btn--primary" onClick={() => handleAcceptRequest(r._id)}>
                   Accept
                 </button>
               </div>
@@ -308,7 +378,7 @@ const Social = () => {
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                 />
-                <button type="submit">Send</button>
+                <button type="submit" className="social-btn social-btn--primary">Send</button>
               </form>
             </>
           )}

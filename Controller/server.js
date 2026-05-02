@@ -20,6 +20,7 @@ const favouriteRoutes = require('./routes/favourites')
 const cookRoutes = require('./routes/cook')
 const reviewRoutes = require('./routes/reviews')
 const mealRoutes = require('./routes/meals')
+const challengeRoutes = require('./routes/challenges')
 
 dns.setServers(['8.8.8.8', '8.8.4.4'])
 
@@ -38,10 +39,11 @@ app.use('/api/favourites', favouriteRoutes)
 app.use('/api/cook', cookRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/meals', mealRoutes)
+app.use('/api/challenges', challengeRoutes)
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    console.log('Connected to Host:', mongoose.connection.host)
+    console.log('Connected to Host')
     app.listen(process.env.PORT, () => {
       console.log('listening for requests on port', process.env.PORT)
     })

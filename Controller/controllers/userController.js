@@ -159,11 +159,17 @@ const getProgress = async (req, res) => {
 
     const likesReceived = likeAgg.length > 0 ? likeAgg[0].totalLikes : 0
 
+    const friendsCount = await FriendRequest.countDocuments({
+      status: 'accepted',
+      $or: [{ from: req.user._id }, { to: req.user._id }]
+    })
+
     res.status(200).json({
       points: user.points || 0,
       recipesSharedCount: user.recipesSharedCount || 0,
       recipesCookedCount: user.recipesCookedCount || 0,
-      likesReceived
+      likesReceived,
+      friendsCount
     })
   } catch (error) {
     res.status(400).json({ error: error.message })

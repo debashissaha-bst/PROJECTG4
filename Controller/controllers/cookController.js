@@ -3,6 +3,91 @@ const CookSession = require('../../model/models/cookSessionModel')
 const Recipe = require('../../model/models/recipeModel')
 const User = require('../../model/models/userModel')
 const Review = require('../../model/models/reviewModel')
+const CookingChallenge = require('../../model/models/cookingChallengeModel')
+const UserChallenge = require('../../model/models/userChallengeModel')
+const { awardBadgeOnce } = require('../utils/badges')
+
+function utcDayKey(date) {
+  return new Date(date).toISOString().slice(0, 10) // YYYY-MM-DD
+}
+
+function dayKeyToUtcMs(dayKey) {
+  // dayKey: YYYY-MM-DD
+  return Date.parse(`${dayKey}T00:00:00.000Z`)
+}
+
+async function awardMilestoneBadgesForUser(user) {
+  if (!user) return
+  const user_id = user._id
+  const cooked = Number(user.recipesCookedCount || 0)
+
+  if (cooked >= 1) await awardBadgeOnce({ user_id, badgeCode: 'badge-cook-1' })
+  if (cooked >= 5) await awardBadgeOnce({ user_id, badgeCode: 'badge-cook-5' })
+  if (cooked >= 10) await awardBadgeOnce({ user_id, badgeCode: 'badge-cook-10' })
+  if (cooked >= 100) await awardBadgeOnce({ user_id, badgeCode: 'badge-cook-100' })
+}
+
+async function progressDailyStreakChallenges({ user_id, cookedAt }) {
+  const dayKey = utcDayKey(cookedAt)
+  const todayMs = dayKeyToUtcMs(dayKey)
+  const yesterdayKey = utcDayKey(new Date(todayMs - 24 * 60 * 60 * 1000))
+
+  const activeRows = await UserChallenge.find({ user_id, status: 'active' }).lean()
+  if (!activeRows.length) return
+
+  const challengeIds = [...new Set(activeRows.map((r) => String(r.challenge_id)))]
+  const challenges = await CookingChallenge.find({ _id: { $in: challengeIds }, isActive: true }).lean()
+  const challengeById = new Map(challenges.map((c) => [String(c._id), c]))
+
+  for (const row of activeRows) {
+    const challenge = challengeById.get(String(row.challenge_id))
+    if (!challenge) continue
+    if (challenge.type !== 'daily_cook_streak') continue
+
+    // Only count 1 cook per day for streak purposes
+    if (row.lastCookedDayKey === dayKey) continue
+
+    const nextStreak =
+      !row.lastCookedDayKey
+        ? 1
+        : row.lastCookedDayKey === yesterdayKey
+          ? (row.streakDays || 0) + 1
+          : 1
+
+    const isCompleted = nextStreak >= Number(challenge.durationDays || 1)
+
+    const update = {
+      lastCookedDayKey: dayKey,
+      streakDays: nextStreak,
+      status: isCompleted ? 'completed' : 'active'
+    }
+    if (isCompleted) {
+      update.completedAt = new Date(cookedAt)
+    }
+
+    await UserChallenge.findByIdAndUpdate(row._id, update, { new: false })
+
+    if (isCompleted) {
+      // award bonus points
+      const rewardPoints = Number(challenge.rewardPoints || 0)
+      if (rewardPoints > 0) {
+        await User.findByIdAndUpdate(user_id, { $inc: { points: rewardPoints } }, { new: false })
+      }
+
+      // award badge
+      const badgeCode =
+        challenge.durationDays === 3
+          ? 'badge-streak-3'
+          : challenge.durationDays === 7
+            ? 'badge-streak-7'
+            : null
+
+      if (badgeCode) {
+        await awardBadgeOnce({ user_id, badgeCode })
+      }
+    }
+  }
+}
 
 const startCooking = async (req, res) => {
   const { recipeId } = req.body
@@ -84,7 +169,7 @@ const finishCooking = async (req, res) => {
     }
 
     // award points for cooking a recipe
-    await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       user_id,
       {
         $inc: {
@@ -92,8 +177,14 @@ const finishCooking = async (req, res) => {
           recipesCookedCount: 1
         }
       },
-      { new: false }
+      { new: true }
     )
+
+    await awardMilestoneBadgesForUser(updatedUser)
+
+    // progress any active cooking challenges based on this finished cook
+    const cookedAt = session.finishedAt || new Date()
+    await progressDailyStreakChallenges({ user_id, cookedAt })
 
     res.status(200).json(session)
   } catch (error) {
@@ -121,12 +212,14 @@ const getCookingHistory = async (req, res) => {
       .populate('recipe_id', 'title')
       .lean()
 
-    if (!sessions.length) {
+    const validSessions = sessions.filter((s) => s.recipe_id && s.recipe_id.title)
+
+    if (!validSessions.length) {
       return res.status(200).json([])
     }
 
     const history = await Promise.all(
-      sessions.map(async (session) => {
+      validSessions.map(async (session) => {
         const latestReview = await Review.findOne({
           user_id,
           recipe_id: session.recipe_id?._id || session.recipe_id
@@ -138,7 +231,7 @@ const getCookingHistory = async (req, res) => {
         return {
           sessionId: session._id,
           recipeId: session.recipe_id?._id || null,
-          recipeTitle: session.recipe_id?.title || 'Unknown recipe',
+          recipeTitle: session.recipe_id?.title || '',
           cookedAt: session.finishedAt || session.updatedAt || session.createdAt,
           review: latestReview
             ? {

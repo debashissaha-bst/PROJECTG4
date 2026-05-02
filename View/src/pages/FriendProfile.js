@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAuthContext } from '../hooks/useAuthContext'
 
@@ -9,14 +9,17 @@ const FriendProfile = () => {
   const [profile, setProfile] = useState(null)
   const [error, setError] = useState(null)
 
+  const authHeaders = useMemo(() => {
+    if (!user?.token) return {}
+    return { Authorization: `Bearer ${user.token}` }
+  }, [user])
+
   useEffect(() => {
     const fetchFriendProfile = async () => {
       if (!user) return
       try {
         const res = await fetch(`/api/user/profile/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${user.token}`
-          }
+          headers: authHeaders
         })
         const json = await res.json()
         if (!res.ok) {
@@ -30,7 +33,7 @@ const FriendProfile = () => {
     }
 
     fetchFriendProfile()
-  }, [id, user])
+  }, [authHeaders, id, user])
 
   if (!user) {
     return <p>You must be logged in to view this page.</p>
@@ -45,27 +48,46 @@ const FriendProfile = () => {
   }
 
   return (
-    <form className="signup">
-      <h3>Friend Profile</h3>
+    <div className="friend-profile-shell">
+      <div className="friend-profile-hero">
+        <div className="friend-profile-avatar" aria-hidden="true">
+          {(profile.name || profile.email || 'U').trim().slice(0, 1).toUpperCase()}
+        </div>
+        <div className="friend-profile-hero-text">
+          <div className="friend-profile-title">{profile.name || 'Friend profile'}</div>
+          <div className="friend-profile-subtitle">{profile.email}</div>
+        </div>
+      </div>
 
-      <label>Email:</label>
-      <input type="text" value={profile.email} readOnly />
-
-      <label>Name:</label>
-      <input type="text" value={profile.name || ''} readOnly />
-
-      <label>Date of Birth:</label>
-      <input type="date" value={profile.dob || ''} readOnly />
-
-      <label>Gender:</label>
-      <input type="text" value={profile.gender || ''} readOnly />
-
-      <label>City:</label>
-      <input type="text" value={profile.city || ''} readOnly />
-
-      <label>Dietary preferences:</label>
-      <input type="text" value={profile.dietaryPreference || ''} readOnly />
-    </form>
+      <div className="friend-profile-card">
+        <div className="friend-profile-grid">
+          <div className="friend-profile-field">
+            <label>Email</label>
+            <input type="text" value={profile.email || ''} readOnly />
+          </div>
+          <div className="friend-profile-field">
+            <label>Name</label>
+            <input type="text" value={profile.name || ''} readOnly />
+          </div>
+          <div className="friend-profile-field">
+            <label>Date of birth</label>
+            <input type="text" value={profile.dob || ''} readOnly />
+          </div>
+          <div className="friend-profile-field">
+            <label>Gender</label>
+            <input type="text" value={profile.gender || ''} readOnly />
+          </div>
+          <div className="friend-profile-field">
+            <label>City</label>
+            <input type="text" value={profile.city || ''} readOnly />
+          </div>
+          <div className="friend-profile-field">
+            <label>Dietary preference</label>
+            <input type="text" value={profile.dietaryPreference || ''} readOnly />
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 

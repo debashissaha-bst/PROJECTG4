@@ -1,7 +1,33 @@
 const Recipe = require('../../model/models/recipeModel')
 const User = require('../../model/models/userModel')
 const Like = require('../../model/models/likeModel')
+const CookSession = require('../../model/models/cookSessionModel')
+const Review = require('../../model/models/reviewModel')
+const { awardBadgeOnce } = require('../utils/badges')
 const mongoose = require('mongoose')
+
+async function awardShareMilestones(user) {
+  if (!user) return
+  const user_id = user._id
+  const shared = Number(user.recipesSharedCount || 0)
+  if (shared >= 1) await awardBadgeOnce({ user_id, badgeCode: 'badge-share-1' })
+  if (shared >= 5) await awardBadgeOnce({ user_id, badgeCode: 'badge-share-5' })
+  if (shared >= 10) await awardBadgeOnce({ user_id, badgeCode: 'badge-share-10' })
+  if (shared >= 100) await awardBadgeOnce({ user_id, badgeCode: 'badge-share-100' })
+}
+
+async function awardLikeMilestoneForOwner(ownerUserId) {
+  if (!ownerUserId) return
+  const agg = await Recipe.aggregate([
+    { $match: { user_id: String(ownerUserId) } },
+    { $group: { _id: null, totalLikes: { $sum: { $ifNull: ['$likes', 0] } } } }
+  ])
+  const totalLikes = agg.length ? Number(agg[0].totalLikes || 0) : 0
+  if (totalLikes >= 1) await awardBadgeOnce({ user_id: ownerUserId, badgeCode: 'badge-likes-1' })
+  if (totalLikes >= 5) await awardBadgeOnce({ user_id: ownerUserId, badgeCode: 'badge-likes-5' })
+  if (totalLikes >= 10) await awardBadgeOnce({ user_id: ownerUserId, badgeCode: 'badge-likes-10' })
+  if (totalLikes >= 100) await awardBadgeOnce({ user_id: ownerUserId, badgeCode: 'badge-likes-100' })
+}
 
 const getRecipes = async (req, res) => {
   const user_id = req.user._id
@@ -100,7 +126,7 @@ const createRecipe = async (req, res) => {
     })
 
     // award points for sharing a new recipe
-    await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       user_id,
       {
         $inc: {
@@ -108,8 +134,10 @@ const createRecipe = async (req, res) => {
           recipesSharedCount: 1
         }
       },
-      { new: false }
+      { new: true }
     )
+
+    await awardShareMilestones(updatedUser)
 
     res.status(200).json(recipe)
   } catch (error) {
@@ -152,9 +180,22 @@ const permanentlyDeleteRecipe = async (req, res) => {
     return res.status(400).json({ error: 'No such recipe' })
   }
 
-  const recipe = await Recipe.findOneAndDelete({ _id: id, user_id: String(req.user._id), isTrashed: true })
-  if (!recipe) return res.status(404).json({ error: 'Recipe not found in trash' })
-  res.status(200).json(recipe)
+  try {
+    const user_id = req.user._id
+    const recipe = await Recipe.findOneAndDelete({ _id: id, user_id: String(user_id), isTrashed: true })
+    if (!recipe) return res.status(404).json({ error: 'Recipe not found in trash' })
+
+    // cleanup dependent data so history doesn't show "Unknown recipe"
+    await Promise.all([
+      CookSession.deleteMany({ user_id, recipe_id: recipe._id }),
+      Review.deleteMany({ user_id, recipe_id: recipe._id }),
+      Like.deleteMany({ recipe_id: recipe._id })
+    ])
+
+    res.status(200).json(recipe)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
 }
 
 const updateRecipe = async (req, res) => {
@@ -217,6 +258,12 @@ const likeRecipe = async (req, res) => {
 
     if (!recipe) {
       return res.status(404).json({ error: 'No such recipe' })
+    }
+
+    // award "likes received" milestone to recipe owner
+    const ownerUserId = recipe.user_id
+    if (ownerUserId && String(ownerUserId) !== String(user_id)) {
+      await awardLikeMilestoneForOwner(ownerUserId)
     }
 
     res.status(200).json(recipe)

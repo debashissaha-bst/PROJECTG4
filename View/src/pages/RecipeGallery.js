@@ -286,7 +286,7 @@ const RecipeGallery = () => {
               </div>
 
               <div className="gallery-side-panel">
-                <p className="gallery-panel-title"><strong>Review (after cooking)</strong></p>
+                <p className="gallery-panel-title"><strong>Review</strong></p>
                 <textarea
                   value={reviewDrafts[recipe._id] || ''}
                   onChange={(e) =>

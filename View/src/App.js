@@ -15,6 +15,7 @@ import Social from './pages/Social'
 import CookingHistory from './pages/CookingHistory'
 import PersonalizedMeals from './pages/PersonalizedMeals'
 import Trash from './pages/Trash'
+import CookingChallenges from './pages/CookingChallenges'
 import Navbar from './components/Navbar'
 
 function App() {
@@ -69,6 +70,10 @@ function App() {
             <Route
               path="/cooking-history"
               element={user ? <CookingHistory /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/challenges"
+              element={user ? <CookingChallenges /> : <Navigate to="/login" />}
             />
             <Route
               path="/personalized-meals"

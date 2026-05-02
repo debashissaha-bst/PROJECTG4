@@ -2,6 +2,19 @@ const User = require('../../model/models/userModel')
 const FriendRequest = require('../../model/models/friendRequestModel')
 const Message = require('../../model/models/messageModel')
 const mongoose = require('mongoose')
+const { awardBadgeOnce } = require('../utils/badges')
+
+async function awardFriendMilestones(userId) {
+  const friendsCount = await FriendRequest.countDocuments({
+    status: 'accepted',
+    $or: [{ from: userId }, { to: userId }]
+  })
+
+  if (friendsCount >= 1) await awardBadgeOnce({ user_id: userId, badgeCode: 'badge-friends-1' })
+  if (friendsCount >= 5) await awardBadgeOnce({ user_id: userId, badgeCode: 'badge-friends-5' })
+  if (friendsCount >= 10) await awardBadgeOnce({ user_id: userId, badgeCode: 'badge-friends-10' })
+  if (friendsCount >= 100) await awardBadgeOnce({ user_id: userId, badgeCode: 'badge-friends-100' })
+}
 
 // GET /api/social/users - list all other users
 const listUsers = async (req, res) => {
@@ -90,7 +103,35 @@ const acceptFriendRequest = async (req, res) => {
       return res.status(404).json({ error: 'Friend request not found' })
     }
 
+    // award "friend count" milestones for both users
+    await Promise.all([awardFriendMilestones(request.to), awardFriendMilestones(request.from)])
+
     res.status(200).json(request)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}
+
+// DELETE /api/social/requests/:id  (cancel outgoing pending request)
+const cancelFriendRequest = async (req, res) => {
+  const { id } = req.params
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid request id' })
+  }
+
+  try {
+    const deleted = await FriendRequest.findOneAndDelete({
+      _id: id,
+      from: req.user._id,
+      status: 'pending'
+    })
+
+    if (!deleted) {
+      return res.status(404).json({ error: 'Pending outgoing request not found' })
+    }
+
+    res.status(200).json({ message: 'Request cancelled' })
   } catch (error) {
     res.status(400).json({ error: error.message })
   }
@@ -203,6 +244,7 @@ module.exports = {
   listRequestsAndFriends,
   sendFriendRequest,
   acceptFriendRequest,
+  cancelFriendRequest,
   getMessages,
   sendMessage,
   unfriend
